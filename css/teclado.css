@@ -90,17 +90,32 @@ h1 {
     opacity: 1;
 }
 
-/* Pequeno vazio no centro da argola inicial (palavras-chave). */
+/* Botão "Aa" no centro da argola inicial: alterna a argola de fora entre
+   sugestões de palavras e um teclado alfabético. */
 .buraco-central {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 28%;
     height: 28%;
+    border: 0;
     border-radius: 50%;
     background: #fff;
+    color: #171717;
+    font: 700 15px Georgia, serif;
+    cursor: pointer;
     transform: translate(-50%, -50%);
-    pointer-events: none;
+}
+
+.buraco-central.ativo {
+    background: #4a4a4a;
+    color: #fff;
+}
+
+.buraco-central:focus,
+.buraco-central:focus-visible {
+    outline: 3px solid #2f8f5b;
+    outline-offset: 2px;
 }
 
 .tecla {
@@ -125,6 +140,14 @@ h1 {
 .anel-externo .tecla { font-size: 12px; }
 .anel-meio .tecla { font-size: 10px; color: #f2f2f2; }
 
+/* Teclas menores para caber as 26 letras do modo alfabético na argola de dentro. */
+.tecla-compacta {
+    width: 34px;
+    height: 34px;
+    padding: 2px;
+}
+.anel-meio .tecla-compacta { font-size: 13px; }
+
 /* Indicação visual de foco, essencial para navegar com as setas do teclado físico.
    O destaque principal é o setor (cunha) atrás da tecla; aqui só garantimos contraste do texto. */
 .tecla:focus,
@@ -139,7 +162,6 @@ h1 {
 }
 
 .satelite {
-    --deslocamento: 0px;
     position: absolute;
     width: 58px;
     height: 58px;
@@ -151,7 +173,11 @@ h1 {
     cursor: pointer;
     opacity: 0;
     pointer-events: none;
-    transition: left .2s ease, top .2s ease, transform .2s ease, opacity .16s ease, background .2s ease, color .2s ease;
+    /* left/top são calculados em JS (posicionarMenuOrbital), com a mesma
+       trigonometria usada nas teclas, para encaixar exatamente na
+       circunferência da argola visível no momento. */
+    transform: translate(-50%, -50%);
+    transition: left .2s ease, top .2s ease, opacity .16s ease, background .2s ease, color .2s ease;
 }
 
 .satelites.ativo .satelite {
@@ -159,37 +185,6 @@ h1 {
     pointer-events: auto;
 }
 
-/* Cada botão ocupa um ponto do arco orbital, próximo do anel externo. */
-.satelite:nth-child(1) { --x: 4px; --y: -150px; }
-.satelite:nth-child(2) { --x: 13px; --y: -90px; }
-.satelite:nth-child(3) { --x: 17px; --y: -30px; }
-.satelite:nth-child(4) { --x: 17px; --y: 30px; }
-.satelite:nth-child(5) { --x: 13px; --y: 90px; }
-.satelite:nth-child(6) { --x: 4px; --y: 150px; }
-
-.satelites[data-direcao="direita"] .satelite {
-    left: calc(100% + var(--x));
-    top: calc(50% + var(--y));
-    transform: translate(4%, -50%);
-}
-
-.satelites[data-direcao="esquerda"] .satelite {
-    left: calc(0% - var(--x));
-    top: calc(50% + var(--y));
-    transform: translate(-104%, -50%);
-}
-
-.satelites[data-direcao="cima"] .satelite {
-    left: calc(50% + var(--y));
-    top: calc(0% - var(--x));
-    transform: translate(-50%, -104%);
-}
-
-.satelites[data-direcao="baixo"] .satelite {
-    left: calc(50% + var(--y));
-    top: calc(100% + var(--x));
-    transform: translate(-50%, 4%);
-}
 .satelite:hover,
 .satelite:focus-visible {
     background: #4a4a4a;
@@ -225,10 +220,34 @@ h1 {
     .pergunta { margin-bottom: 45px; font-size: 32px; }
     .teclado-area { width: 290px; height: 290px; }
     .satelite { width: 50px; height: 50px; font-size: 9px; }
-    .satelite:nth-child(1) { --x: 3px; --y: -113px; }
-    .satelite:nth-child(2) { --x: 10px; --y: -68px; }
-    .satelite:nth-child(3) { --x: 13px; --y: -23px; }
-    .satelite:nth-child(4) { --x: 13px; --y: 23px; }
-    .satelite:nth-child(5) { --x: 10px; --y: 68px; }
-    .satelite:nth-child(6) { --x: 3px; --y: 113px; }
+}
+
+/* Painel de frases prontas, logo abaixo do campo de texto. */
+.frases-prontas {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: -18px;
+    margin-bottom: 28px;
+    min-height: 0;
+}
+
+.frase-pronta {
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 16px;
+    background: #eee;
+    color: #171717;
+    font: 600 13px Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.frase-pronta:hover,
+.frase-pronta:focus-visible {
+    background: #2f8f5b;
+    color: #fff;
+    outline: none;
 }
